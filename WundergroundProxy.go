@@ -58,7 +58,8 @@ func main() {
 	}
 
 	http.HandleFunc("/weatherstation/updateweatherstation.php", handler)
-	http.ListenAndServe(":8081", nil)
+	http.ListenAndServe(":80", nil)
+
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
