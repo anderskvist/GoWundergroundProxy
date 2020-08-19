@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
 	"reflect"
 	"time"
 
@@ -28,6 +29,8 @@ func connect(clientID string, uri *url.URL) mqtt.Client {
 	if err := token.Error(); err != nil {
 		log.Fatal(err)
 	}
+	log.Debug("Connecting to MQTT (pub)")
+	client.Publish("wunderground/GoWundergroundProxyOnline", 1, false, "true")
 	return client
 }
 
@@ -53,9 +56,24 @@ func main() {
 
 	if pubConnection == nil {
 		pubConnection = connect(mqttClientID+"pub", uri)
-		log.Debug("Connecting to MQTT (pub)")
-		pubConnection.Publish("wunderground/GoWundergroundProxyOnline", 0, false, "true")
 	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Kill)
+	go func() {
+		for sig := range c {
+			log.Debug("ping")
+
+			if sig == os.Interrupt {
+				log.Debug(sig)
+				pubConnection.Publish("wunderground/GoWundergroundProxyOnline", 1, false, "false")
+				// we need to sleep just a bit (1ms seems to be enough), to allow us to send info to the mqtt broker
+				time.Sleep(10 * time.Millisecond)
+				os.Exit(0)
+			}
+		}
+	}()
 
 	http.HandleFunc("/weatherstation/updateweatherstation.php", handler)
 	http.ListenAndServe(":80", nil)
