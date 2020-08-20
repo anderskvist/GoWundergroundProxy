@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strconv"
 	"time"
 
 	log "github.com/anderskvist/GoHelpers/log"
@@ -21,24 +22,14 @@ var mqttClientID = "GoWundergroundProxy-" + strconv.Itoa(os.Getpid())
 var cfg *ini.File
 
 func connect(clientID string, uri *url.URL) mqtt.Client {
-	log.Debug(clientID)
-	log.Debug("Debug1")
 	opts := createClientOptions(clientID, uri)
-	log.Debug("Debug2")
-	log.Debug(opts)
 	client := mqtt.NewClient(opts)
-	log.Debug(client)
-	log.Debug("Debug3")
 	token := client.Connect()
-	log.Debug(token)
-	log.Debug("Debug4")
-	for !token.WaitTimeout(10 * time.Second) {
+	for !token.WaitTimeout(3 * time.Second) {
 	}
-	log.Debug("Debug5")
 	if err := token.Error(); err != nil {
 		log.Fatal(err)
 	}
-	log.Debug("Debug6")
 	log.Debug("Connecting to MQTT (pub)")
 	client.Publish("wunderground/GoWundergroundProxyOnline", 1, false, "true")
 	return client
@@ -60,7 +51,6 @@ func main() {
 
 	mqttURL := cfg.Section("mqtt").Key("url").String()
 	uri, err := url.Parse(mqttURL)
-	log.Debug(uri)
 	if err != nil {
 		log.Fatal(err)
 	}
