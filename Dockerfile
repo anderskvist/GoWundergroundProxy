@@ -19,6 +19,8 @@ RUN go get -d -v ./...
 # Install the package
 RUN go install -ldflags "-X github.com/anderskvist/GoHelpers/version.Version=`date -u '+%Y%m%d-%H%M%S'`-`git rev-parse --short HEAD`" -v ./...
 
+EXPOSE 80
+
 # Run the executable
 CMD ["GoWundergroundProxy","/config.ini"]
 
