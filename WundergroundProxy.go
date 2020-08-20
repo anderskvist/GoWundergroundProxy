@@ -94,4 +94,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// send request to wunderground (we stole the hostname, so we need to resolve it externally)
+	if true {
+		log.Info("Sending request on to the real rtupdate.wunderground.com")
+		req, err := http.NewRequest("GET", "http://169.47.111.60"+r.URL.RequestURI(), nil)
+		req.Host = "rtupdate.wunderground.com"
+
+		client := &http.Client{Timeout: time.Second * 10}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Fatal("Error reading response. ", err)
+		}
+		defer resp.Body.Close()
+		log.Debug("HTTP Status: ", resp.StatusCode)
+	}
 }
