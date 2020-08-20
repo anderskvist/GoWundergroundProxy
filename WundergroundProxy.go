@@ -21,6 +21,7 @@ var mqttClientID = "GoWundergroundProxy" + string(os.Getpid())
 var cfg *ini.File
 
 func connect(clientID string, uri *url.URL) mqtt.Client {
+	log.Debug(clientID)
 	log.Debug("Debug1")
 	opts := createClientOptions(clientID, uri)
 	log.Debug("Debug2")
