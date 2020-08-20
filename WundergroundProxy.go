@@ -17,7 +17,7 @@ import (
 )
 
 var pubConnection mqtt.Client
-var mqttClientID = "GoWundergroundProxy" + string(os.Getpid())
+var mqttClientID = "GoWundergroundProxy-" + strconv.Itoa(os.Getpid())
 var cfg *ini.File
 
 func connect(clientID string, uri *url.URL) mqtt.Client {
@@ -66,7 +66,7 @@ func main() {
 	}
 
 	if pubConnection == nil {
-		pubConnection = connect(mqttClientID+"pub", uri)
+		pubConnection = connect(mqttClientID+"-pub", uri)
 	}
 
 	c := make(chan os.Signal, 1)
