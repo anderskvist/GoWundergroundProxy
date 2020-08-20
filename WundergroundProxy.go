@@ -24,11 +24,14 @@ func connect(clientID string, uri *url.URL) mqtt.Client {
 	log.Debug("Debug1")
 	opts := createClientOptions(clientID, uri)
 	log.Debug("Debug2")
+	log.Debug(opts)
 	client := mqtt.NewClient(opts)
+	log.Debug(client)
 	log.Debug("Debug3")
 	token := client.Connect()
+	log.Debug(token)
 	log.Debug("Debug4")
-	for !token.WaitTimeout(3 * time.Second) {
+	for !token.WaitTimeout(10 * time.Second) {
 	}
 	log.Debug("Debug5")
 	if err := token.Error(); err != nil {
